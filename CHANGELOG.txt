@@ -1,0 +1,37 @@
+Scrypto - Secure Substitution Cipher
+Copyright 2012 Lars Schweighauser
+
+This work is licensed under the GPLv3
+A version should have been included with Scrypto (LICENSE.txt)
+If you cannot find it, you can read the full license at:
+http://opensource.org/licenses/gpl-3.0.html
+
+---
+
+This change log only shows changes from the Crypto 1.4.9 source and later.
+A full version from Crypto Alpha 0.0.1 to Release 1.4.9
+can be found in the Crypto package.
+
+
+Scrypto is a substition cipher program based on Crypto.
+
+
+Release 1.5:
+* All of these new changes have caused issues with Python 3,
+so I've focussed development on Python 2.7
+(once I've finished core code, I will work on functionality.)
+Scrypto:
+* Created a branch of Crypto called Scrypto for more secure
+and personalized encoding.
+* Removed 35 or so unnecessary lines. 
+* Began preperation for removal of default key mode
+* Removed the default key mode
+* Changed the way custom keys are created so that they do not always substitute by 9.
+* Program now asks for a cipher offset on Create Key.
+* Program disguises the key in Depend.txt
+(Will try to creatively cover up for the offset as well.
+I'm thinking something from the random module might do the trick.)
+* Made encode and decode tell the user to create a key before launching.
+(Might have them launch Create New Key at a future date.)
+
+END CHANGE LOG
