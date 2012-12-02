@@ -19,12 +19,13 @@ So far I've got an offset range of 2 - 11. Will attempt to increase it.
 """
 
 
-Version = "1.5.1"
+Version = "1.5.3"
 Python_2_7_Status = "Stable"
 Python_3_0_Status = "Unstable"
 Python_3_3_Status = "Unstable"
 
 from decimal import *
+from random import randrange
 import sys
 import codecs
 
@@ -103,7 +104,6 @@ class Encrypt(object):
 	def decode_new_key(self, line, big_key, user_guess, off_set):
 	
 		decode_result = ""
-		real_key = (int(big_key)/int(user_guess))
 
 		for char in line:
 			str_ord = ord(char)
@@ -128,6 +128,7 @@ class Encrypt(object):
 	
 		guess_result = ""
 		big_key = lines_dependant[1]
+		small_key = int(lines_dependant[2]) / int(lines_dependant[0])
 		key_guess = Start.GUI.get_string("Guess", "Give me a key to try: ")
 		
 		if key_guess is not None and key_guess != "":
@@ -137,7 +138,7 @@ class Encrypt(object):
 				guess_result += str(ord_)
 
 			
-			if Decimal(big_key) / Decimal(guess_result) == 9:
+			if Decimal(big_key) / Decimal(guess_result) == small_key:
 				file_read = codecs.open(file, 'r', encoding="utf-8")
 				lines = file_read.readlines()
 		
@@ -177,35 +178,45 @@ class Encrypt(object):
 		
 	def create_key(self, file):
 		
-		off_set = Start.GUI.get_string("Off Set", "Enter the desired offset (2 - 11)\n")
+		off_set = Start.GUI.get_string("Off Set", "Enter the desired offset (2 - 11)")
 		if off_set is not None:
-			if 2 <= int(off_set) <= 11:
+			try:
+				if 2 <= int(off_set) <= 12:
 		
-					user_input = Start.GUI.get_string("Custom Key", "Enter a desired key:\n(alpha-numeric supported since beta 0.7.2)\n")
-					if user_input is not None:
+						user_input = Start.GUI.get_string("Custom Key", "Enter a desired key:\n(alpha-numeric supported since beta 0.7.2)\n")
+						if user_input is not None:
 		
-						write_string = "Your new key is: " + user_input + "\nDon't lose it.\n"
-						Start.GUI.write(write_string)
-		
-						depend = codecs.open(file, 'r', encoding="utf-8")
-						#lines_depend = depend.readlines()
-						result = ""
+							write_string = "Your new key is: " + user_input + "\nDon't lose it.\n"
+							Start.GUI.write(write_string)
+							depend = codecs.open(file, 'r', encoding="utf-8")
+							result = ""
 	
-						for item in user_input:
-							ord_ = ord(item)
-							result += str(ord_)
-		
-						new_key = int(result) * 9
-						new_lines_depend = []
+							for item in user_input:
+								ord_ = ord(item)
+								result += str(ord_)
+						
+							random_mutiplier = randrange(200000, 1500000)
+							new_big_key = int(result) * random_mutiplier
+							write_multiplier = random_mutiplier * int(off_set)
+							new_lines_depend = []
+						
+							new_lines_depend.append(str(off_set) + "\n")
+							new_lines_depend.append(str(new_big_key) + "\n")
+							new_lines_depend.append(str(write_multiplier))
 
-						new_lines_depend.append(str(off_set) + "\n")
-						new_lines_depend.append(str(new_key))
+							depend = codecs.open(file, 'w', encoding="utf-8")
+							depend.writelines(new_lines_depend[::1])
 
-						depend = codecs.open(file, 'w', encoding="utf-8")
-						depend.writelines(new_lines_depend[::1])
-
-					depend.close()
-		Start.GUI.refresh_time(1500)
+						depend.close()
+						Start.GUI.refresh_time(2500)	
+						
+				else:
+					Start.GUI.write("The off set is out of range.\nI need a number betweem 2 and 11\n")
+					
+			except ValueError:
+				Start.GUI.write("The off set has to be an integer.\n")
+	
+			
 		return
 		
 		
@@ -217,18 +228,26 @@ class Encrypt(object):
 		if lines_depend[1] != "\n":
 			guess_result = ""
 			big_key = lines_depend[1]
+			small_key = int(lines_depend[2]) / int(lines_depend[0])
 			key_guess = Start.GUI.get_string("Guess", "Please enter the current user key first. ")
-			
+	
 			if key_guess is not None:
 			
-				for item in key_guess:
-					ord_ = ord(item)
-					guess_result += str(ord_)
+				if key_guess != '':
+				
+					for item in key_guess:
+						ord_ = ord(item)
+						guess_result += str(ord_)
+					
+					if Decimal(big_key) / Decimal(guess_result) == small_key:
+						self.create_key(file)
+					
+					else:
+						Start.GUI.write("Sorry, that is not the current user key.\n")
 
-				if Decimal(big_key) / Decimal(guess_result) == 9:
-					self.create_key(file)
 				else:
-					Start.GUI.write("Sorry, that is not the current user key.\n")
+					Start.GUI.write("You did not enter a key. Try again.\n")
+				
 		else:
 			self.create_key(file)
 		
