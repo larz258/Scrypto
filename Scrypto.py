@@ -13,7 +13,7 @@ So far I've got an offset range of 2 - 11.
 """
 
 
-Version = "1.6.1"
+Version = "1.6.2"
 Version_Status = "Stable"
 #Python_2_7_Status = "Stable"
 #Python_3_0_Status = "Stable"
@@ -52,7 +52,7 @@ class Encrypt(object):
         self.root = root
 
     def encode(self, string, off_set):
-        result = ""
+        result = []
         for char in string:
             str_ord = ord(char)
 
@@ -65,25 +65,26 @@ class Encrypt(object):
             else:
                 str_chr = str_ord
 
-            result += chr(str_chr)
-        return result
+            result.append(chr(str_chr))
+        return ''.join(result)
 
     def encode_file(self, file, off_set):
 
         encode_result = ""
+        encode_result = []
         file_read = codecs.open(file, 'r', encoding="utf-8")
         lines = file_read.readlines()
 
         for l in lines:
-            encode_result += self.encode(l, int(off_set))
+            encode_result.append(self.encode(l, int(off_set)))
         file_read.close()
 
         file_write = codecs.open(file, 'w', encoding="utf-8")
-        file_write.writelines(encode_result)
-        Start.GUI.write(encode_result + "\n")
+        file_write.writelines(''.join(encode_result))
+        Start.GUI.write(''.join(encode_result) + "\n")
 
     def decode_new_key(self, line, big_key, user_guess, off_set):
-        decode_result = ""
+        decode_result = []
         for char in line:
             str_ord = ord(char)
 
@@ -96,8 +97,8 @@ class Encrypt(object):
             else:
                 str_chr = str_ord
 
-            decode_result += chr(str_chr)
-        return decode_result
+            decode_result.append(chr(str_chr))
+        return ''.join(decode_result)
 
     def decode_file_new_key(self, file, guess_numb, lines_dependant, off_set):
         guess_result = ""
@@ -114,17 +115,17 @@ class Encrypt(object):
             if Decimal(big_key) / Decimal(guess_result) == int(small_key):
                 file_read = codecs.open(file, 'r', encoding="utf-8")
                 lines = file_read.readlines()
-                new_result = ""
+                new_result = []
 
                 for item in lines:
-                    new_result += self.decode_new_key(item, big_key,
-                                                      guess_result,
-                                                      int(off_set))
+                    new_result.append(self.decode_new_key(item, big_key,
+                                                          guess_result,
+                                                          int(off_set)))
                 file_read.close()
 
                 file_write = codecs.open(file, 'w', encoding="utf-8")
-                file_write.writelines(new_result)
-                Start.GUI.write(new_result + "\n")
+                file_write.writelines(''.join(new_result))
+                Start.GUI.write(''.join(new_result) + "\n")
                 return
 
             if guess_numb < 1:
@@ -166,8 +167,9 @@ class Encrypt(object):
                                                       " since beta 0.7.2)\n")
 
                     if user_input is not None:
-                        write_string = "Your new key is: "
-                        + user_input + "\nDon't lose it.\n"
+                        write_string = ("Your new key is: "
+                                        + user_input +
+                                        "\nDon't lose it.\n")
                         Start.GUI.write(write_string)
                         depend = codecs.open(file, 'r', encoding="utf-8")
                         result = ""
