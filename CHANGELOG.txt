@@ -39,6 +39,8 @@ with the key is never created the same way twice.
 
 Release 1.6:
 * Fixed bugs that prevented Python 3 from working.
+* Made indentation match PEP8
+(used flake8)
 
 
 END CHANGE LOG
