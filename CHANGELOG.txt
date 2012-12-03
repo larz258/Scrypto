@@ -37,4 +37,8 @@ I'm thinking something from the random module might do the trick.)
 with the key is never created the same way twice.
 
 
+Release 1.6:
+* Fixed bugs that prevented Python 3 from working.
+
+
 END CHANGE LOG

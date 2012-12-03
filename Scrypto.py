@@ -9,20 +9,15 @@ If you cannot find it, you can read the full license at:
 http://opensource.org/licenses/gpl-3.0.html
 
 ---
-
-Huge thanks to K900 (GitHub)/K900_ (Reddit) for solving the Python version check.
-(Now everything fits into one nice little script.)
-And for telling me that the hashbang needs to be in the first line. 
-And for being awesome in general.
-
-So far I've got an offset range of 2 - 11. Will attempt to increase it.
+So far I've got an offset range of 2 - 11.
 """
 
 
-Version = "1.5.3"
-Python_2_7_Status = "Stable"
-Python_3_0_Status = "Unstable"
-Python_3_3_Status = "Unstable"
+Version = "1.6.0"
+Version_Status = "Stable"
+#Python_2_7_Status = "Stable"
+#Python_3_0_Status = "Stable"
+#Python_3_3_Status = "Stable"
 
 from decimal import *
 from random import randrange
@@ -44,6 +39,7 @@ elif sys.version_info[0] == 2 and sys.version_info[1] >= 7:
     
     
 elif sys.version_info[0] == 3:
+
 	from tkinter import *
 	from tkinter.messagebox import askquestion
 	from tkinter.simpledialog import askstring
@@ -138,7 +134,7 @@ class Encrypt(object):
 				guess_result += str(ord_)
 
 			
-			if Decimal(big_key) / Decimal(guess_result) == small_key:
+			if Decimal(big_key) / Decimal(guess_result) == int(small_key):
 				file_read = codecs.open(file, 'r', encoding="utf-8")
 				lines = file_read.readlines()
 		
@@ -229,7 +225,7 @@ class Encrypt(object):
 			guess_result = ""
 			big_key = lines_depend[1]
 			small_key = int(lines_depend[2]) / int(lines_depend[0])
-			key_guess = Start.GUI.get_string("Guess", "Please enter the current user key first. ")
+			key_guess = Start.GUI.get_string("!", "Please enter the current user key first. ")
 	
 			if key_guess is not None:
 			
@@ -239,7 +235,7 @@ class Encrypt(object):
 						ord_ = ord(item)
 						guess_result += str(ord_)
 					
-					if Decimal(big_key) / Decimal(guess_result) == small_key:
+					if Decimal(big_key) / Decimal(guess_result) == int(small_key):
 						self.create_key(file)
 					
 					else:
