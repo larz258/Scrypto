@@ -13,6 +13,6 @@ http://opensource.org/licenses/gpl-3.0.html
 
 Scrypto is a secure substition cipher built on the Crypto 1.4.9 source.
 Scrypto removed the option of a default key from Crypto and allows users to customize 
-the offset value of the substition. This is makes the encryption slightly more 
+the offset value of the substition. This makes the encryption slightly more 
 difficult to crack. (Though still not recommended for sensitive data.)
 
