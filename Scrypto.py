@@ -13,7 +13,7 @@ So far I've got an offset range of 2 - 11.
 """
 
 
-Version = "1.6.2"
+Version = "1.6.3"
 Version_Status = "Stable"
 #Python_2_7_Status = "Stable"
 #Python_3_0_Status = "Stable"
@@ -193,8 +193,8 @@ class Encrypt(object):
                     Start.GUI.refresh_time(2500)
 
                 else:
-                    Start.GUI.write('''The off set is out of range.\n
-                    I need a number betweem 2 and 11\n''')
+                    Start.GUI.write("The off set is out of range.\n"
+                                    + "I need a number betweem 2 and 11\n")
 
             except ValueError:
                 Start.GUI.write("The off set has to be an integer.\n")
@@ -209,7 +209,7 @@ class Encrypt(object):
             guess_result = ""
             big_key = lines_depend[1]
             small_key = int(lines_depend[2]) / int(lines_depend[0])
-            check_small_key = Decimal(big_key) / Decimal(guess_result)
+            check_small_key = Decimal(big_key) / Decimal(str(small_key))
             key_guess = Start.GUI.get_string("!",
                                              "Please enter the current user"
                                              + " key first.")
@@ -222,7 +222,7 @@ class Encrypt(object):
                         ord_ = ord(item)
                         guess_result += str(ord_)
 
-                    if check_small_key == int(small_key):
+                    if check_small_key == int(guess_result):
                         self.create_key(file)
 
                     else:
@@ -301,8 +301,9 @@ class Scrypto(Frame):
     def create_and_quit(self, depend_file):
 
         if self.lines_dependant[1] != "\n":
-            Overwrite_key_Option = askquestion("User Key Found!", '''There is
-             already a user key, would you like to overwrite it?''')
+            Overwrite_key_Option = askquestion("User Key Found!", "There is"
+                                               + " already a user key, would you"
+                                               + " like to overwrite it?")
 
             if Overwrite_key_Option == "yes":
                 Start.Encode_Object.create_key_check(depend_file)

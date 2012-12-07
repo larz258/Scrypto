@@ -42,6 +42,7 @@ Release 1.6:
 * Made indentation match PEP8
 (used flake8)
 * Converted strings to lists where necessary to prevent possible crashes.
+* Bug fix
 
 
 END CHANGE LOG
