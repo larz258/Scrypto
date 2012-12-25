@@ -12,8 +12,7 @@ http://opensource.org/licenses/gpl-3.0.html
 So far I've got an offset range of 2 - 11.
 """
 
-
-Version = "1.6.3"
+Version = "1.6.4"
 Version_Status = "Stable"
 #Python_2_7_Status = "Stable"
 #Python_3_0_Status = "Stable"
@@ -44,12 +43,16 @@ else:
     print("Scrypto does not support Python " + sys.version[0:5:1] + ".\n")
     sys.exit(1)
 
+
 getcontext().prec = 100
 
 
-class Encrypt(object):
+class CORE(object):
     def __init__(self, root):
         self.root = root
+
+    def add_gui(self, gui):
+        self.gui = gui
 
     def encode(self, string, off_set):
         result = []
@@ -81,7 +84,7 @@ class Encrypt(object):
 
         file_write = codecs.open(file, 'w', encoding="utf-8")
         file_write.writelines(''.join(encode_result))
-        Start.GUI.write(''.join(encode_result) + "\n")
+        self.gui.write(''.join(encode_result) + "\n")
 
     def decode_new_key(self, line, big_key, user_guess, off_set):
         decode_result = []
@@ -104,7 +107,7 @@ class Encrypt(object):
         guess_result = ""
         big_key = lines_dependant[1]
         small_key = int(lines_dependant[2]) / int(lines_dependant[0])
-        key_guess = Start.GUI.get_string("Guess", "Give me a key to try: ")
+        key_guess = self.gui.get_string("Guess", "Give me a key to try: ")
 
         if key_guess is not None and key_guess != "":
 
@@ -125,27 +128,27 @@ class Encrypt(object):
 
                 file_write = codecs.open(file, 'w', encoding="utf-8")
                 file_write.writelines(''.join(new_result))
-                Start.GUI.write(''.join(new_result) + "\n")
+                self.gui.write(''.join(new_result) + "\n")
                 return
 
             if guess_numb < 1:
-                Start.GUI.write("You have no more guesses.\n")
+                self.gui.write("You have no more guesses.\n")
                 replace_lines = []
                 file_write = codecs.open(file, 'w', encoding="utf-8")
                 file_write.writelines(replace_lines)
                 file_write.close()
-                Start.GUI.quit()
+                self.gui.quit()
                 return
 
             elif guess_numb == 1:
-                Start.GUI.write("You have " + str(guess_numb)
+                self.gui.write("You have " + str(guess_numb)
                                 + " guess left.\n")
                 guess_numb -= 1
                 self.decode_file_new_key(file, guess_numb,
                                          lines_dependant, off_set)
 
             else:
-                Start.GUI.write("You have "
+                self.gui.write("You have "
                                 + str(guess_numb)
                                 + " guesses left.\n")
                 guess_numb -= 1
@@ -154,14 +157,14 @@ class Encrypt(object):
         return
 
     def create_key(self, file):
-        off_set = Start.GUI.get_string("Off Set",
+        off_set = self.gui.get_string("Off Set",
                                        "Enter the desired offset (2 - 11)")
         if off_set is not None:
 
             try:
                 if 2 <= int(off_set) <= 12:
 
-                    user_input = Start.GUI.get_string("Custom Key",
+                    user_input = self.gui.get_string("Custom Key",
                                                       "Enter a desired key:\n"
                                                       + "alpha-numeric support"
                                                       " since beta 0.7.2)\n")
@@ -170,7 +173,7 @@ class Encrypt(object):
                         write_string = ("Your new key is: "
                                         + user_input +
                                         "\nDon't lose it.\n")
-                        Start.GUI.write(write_string)
+                        self.gui.write(write_string)
                         depend = codecs.open(file, 'r', encoding="utf-8")
                         result = ""
 
@@ -190,14 +193,14 @@ class Encrypt(object):
                         depend = codecs.open(file, 'w', encoding="utf-8")
                         depend.writelines(new_lines_depend[::1])
                     depend.close()
-                    Start.GUI.refresh_time(2500)
+                    self.gui.refresh_time(2500)
 
                 else:
-                    Start.GUI.write("The off set is out of range.\n"
+                    self.gui.write("The off set is out of range.\n"
                                     + "I need a number betweem 2 and 11\n")
 
             except ValueError:
-                Start.GUI.write("The off set has to be an integer.\n")
+                self.gui.write("The off set has to be an integer.\n")
         return
 
     def create_key_check(self, file):
@@ -210,7 +213,7 @@ class Encrypt(object):
             big_key = lines_depend[1]
             small_key = int(lines_depend[2]) / int(lines_depend[0])
             check_small_key = Decimal(big_key) / Decimal(str(small_key))
-            key_guess = Start.GUI.get_string("!",
+            key_guess = self.gui.get_string("!",
                                              "Please enter the current user"
                                              + " key first.")
 
@@ -226,18 +229,20 @@ class Encrypt(object):
                         self.create_key(file)
 
                     else:
-                        Start.GUI.write("Sorry, that is not" +
+                        self.gui.write("Sorry, that is not" +
                                         " the current user key.\n")
 
                 else:
-                    Start.GUI.write("You did not enter a key. Try again.\n")
+                    self.gui.write("You did not enter a key. Try again.\n")
 
         else:
             self.create_key(file)
 
 
-class Scrypto(Frame):
-
+class GUI(Frame):
+    def __init__(self, core):
+        self.core = core
+        
     def init_ui(self, parent):
         Frame.__init__(self, parent)
         self.parent = parent
@@ -279,7 +284,7 @@ class Scrypto(Frame):
             file = dlg.show()
 
             if file != "":
-                Start.Encode_Object.encode_file(file, self.lines_dependant[0])
+                self.core.encode_file(file, self.lines_dependant[0])
 
         else:
             self.write("Please create a key first.\n")
@@ -290,7 +295,7 @@ class Scrypto(Frame):
             file = dlg.show()
 
             if file != "":
-                Start.Encode_Object.decode_file_new_key(file, 3,
+                self.core.decode_file_new_key(file, 3,
                                                         lines_dependant,
                                                         self.lines_dependant[0]
                                                         )
@@ -306,13 +311,10 @@ class Scrypto(Frame):
                                                + " like to overwrite it?")
 
             if Overwrite_key_Option == "yes":
-                Start.Encode_Object.create_key_check(depend_file)
+                self.core.create_key_check(depend_file)
 
         else:
-            Start.Encode_Object.create_key_check(depend_file)
-
-    def default_and_quit(self, depend_file):
-        Start.Encode_Object.default_key(depend_file)
+            self.core.create_key_check(depend_file)
 
     def write(self, txt):
         self.output.insert(END, str(txt))
@@ -330,16 +332,16 @@ class Scrypto(Frame):
         self.after(time_to_sleep, self.refresh)
 
 
-class Main(object):
-
-    def __main__(self):
-        self.root = Tk()
-        self.Encode_Object = Encrypt(self.root)
-        self.GUI = Scrypto()
-        self.GUI.init_ui(self.root)
-        self.root.geometry("300x250+300+300")
-        self.root.mainloop()
+def __main__():
+    root = Tk()
+    core = CORE(root)
+    gui = GUI(core)
+    core.add_gui(gui)
+    gui.init_ui(root)
+    root.geometry("300x250+300+300")
+    root.mainloop()
 
 if __name__ == "__main__":
-    Start = Main()
-    Start.__main__()
+    __main__()
+    
+    

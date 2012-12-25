@@ -43,6 +43,8 @@ Release 1.6:
 (used flake8)
 * Converted strings to lists where necessary to prevent possible crashes.
 * Bug fix
-
+* Optimized the way Scrypto handles objects.
+(this makes implementation as a module easier to handle.
+Though I still need to detach a gui from it.)
 
 END CHANGE LOG
